@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth.uid == userId;
+      allow update, delete: if request.auth.uid == userId;
+    }
+
+    match /events/{eventId} {
+      allow read: if resource.data.visibility == 'public' || request.auth != null;
+      allow create: if request.auth != null;
+      // Organizer can update/delete; any signed-in user can update only currentAttendees (for registration)
+      allow update, delete: if request.auth.uid == resource.data.organizerId
+        || (request.auth != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentAttendees', 'updatedAt']));
+
+      match /registrations/{registrationId} {
+        allow read: if request.auth.uid == resource.data.userId
+          || request.auth.uid == get(/databases/$(database)/documents/events/$(eventId)).data.organizerId;
+        allow create: if request.auth != null;
+        allow update, delete: if request.auth.uid == resource.data.userId;
+      }
+    }
+  }
+}
