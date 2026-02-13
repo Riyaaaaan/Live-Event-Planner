@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { EVENT_CATEGORIES } from '../../utils/constants'
 
-export const PROGRAM_DEFAULT = { dateTime: '', title: '', description: '' }
+export const PROGRAM_DEFAULT = { dateTime: '', title: '', description: '', requiresRegistration: false, capacity: null }
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -50,6 +50,9 @@ function parseProgramsFromEvent(event) {
       : '',
     title: p.title ?? '',
     description: p.description ?? '',
+    requiresRegistration: Boolean(p.requiresRegistration),
+    capacity: p.capacity ?? null,
+    currentAttendees: p.currentAttendees ?? 0,
   }))
 }
 
@@ -96,6 +99,11 @@ export function EventForm({ event, onSubmit, isSubmitting }) {
     const sorted = [...programs]
       .filter((p) => p.dateTime && p.title.trim())
       .sort((a, b) => a.dateTime.localeCompare(b.dateTime))
+      .map((p) => ({
+        ...p,
+        requiresRegistration: Boolean(p.requiresRegistration),
+        capacity: p.capacity != null ? parseInt(p.capacity, 10) : null,
+      }))
     onSubmit({ ...data, programs: sorted })
   }
 
@@ -219,6 +227,12 @@ export function EventForm({ event, onSubmit, isSubmitting }) {
                   <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-600">
                     Description (optional)
                   </th>
+                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-600">
+                    Capacity
+                  </th>
+                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-600">
+                    Requires registration
+                  </th>
                   <th scope="col" className="relative w-10 px-2 py-2">
                     <span className="sr-only">Remove</span>
                   </th>
@@ -252,6 +266,27 @@ export function EventForm({ event, onSubmit, isSubmitting }) {
                         value={p.description}
                         onChange={(e) => updateProgram(index, 'description', e.target.value)}
                       />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="number"
+                        min="1"
+                        className="input w-24 text-sm"
+                        placeholder="Max"
+                        value={p.capacity ?? ''}
+                        onChange={(e) => updateProgram(index, 'capacity', e.target.value ? parseInt(e.target.value, 10) : null)}
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <label className="inline-flex cursor-pointer items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          checked={Boolean(p.requiresRegistration)}
+                          onChange={(e) => updateProgram(index, 'requiresRegistration', e.target.checked)}
+                        />
+                        <span className="text-sm text-gray-600">Requires registration</span>
+                      </label>
                     </td>
                     <td className="whitespace-nowrap px-2 py-2 text-right">
                       <button

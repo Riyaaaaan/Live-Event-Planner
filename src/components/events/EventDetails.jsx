@@ -14,13 +14,27 @@ function formatProgramDateTime(dateTimeStr) {
   })
 }
 
-export function EventDetails({ event }) {
+export function EventDetails({ event, onRegisterProgram, registeredProgramIds = [] }) {
   if (!event) return null
   const { title, description, category, startDate, endDate, location, capacity, currentAttendees, visibility, status, programs } = event
   const spotsLeft = capacity != null ? Math.max(0, capacity - (currentAttendees || 0)) : null
   const sortedPrograms = Array.isArray(programs) && programs.length
     ? [...programs].sort((a, b) => (a.dateTime || '').localeCompare(b.dateTime || ''))
     : []
+
+  function getProgramSpotsLeft(program) {
+    if (program.capacity == null) return null
+    return Math.max(0, program.capacity - (program.currentAttendees || 0))
+  }
+
+  function isProgramFull(program) {
+    if (program.capacity == null) return false
+    return (program.currentAttendees || 0) >= program.capacity
+  }
+
+  function isProgramRegistered(programIndex) {
+    return registeredProgramIds.includes(programIndex)
+  }
 
   return (
     <div className="space-y-6">
@@ -101,22 +115,77 @@ export function EventDetails({ event }) {
                   <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                     Description
                   </th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Capacity
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                    Registration
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {sortedPrograms.map((p, index) => (
-                  <tr key={index}>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
-                      {formatProgramDateTime(p.dateTime)}
-                    </td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                      {p.title || '—'}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {p.description || '—'}
-                    </td>
-                  </tr>
-                ))}
+                {sortedPrograms.map((p, index) => {
+                  const spotsLeft = getProgramSpotsLeft(p)
+                  const full = isProgramFull(p)
+                  const registered = isProgramRegistered(index)
+                  return (
+                    <tr key={index}>
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
+                        {formatProgramDateTime(p.dateTime)}
+                      </td>
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        {p.title || '—'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {p.description || '—'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {p.capacity != null ? (
+                          <span>
+                            {p.currentAttendees ?? 0} / {p.capacity}
+                            {spotsLeft != null && spotsLeft > 0 && (
+                              <span className="ml-1 text-primary-600">({spotsLeft} left)</span>
+                            )}
+                            {full && (
+                              <span className="ml-1 text-red-600">(Full)</span>
+                            )}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {p.requiresRegistration ? (
+                          onRegisterProgram ? (
+                            registered ? (
+                              <span className="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                                Registered
+                              </span>
+                            ) : full ? (
+                              <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">
+                                Full
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => onRegisterProgram(index)}
+                                className="text-sm font-medium text-primary-600 hover:underline"
+                              >
+                                Register
+                              </button>
+                            )
+                          ) : (
+                            <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+                              Registration required
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-sm text-gray-400">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
