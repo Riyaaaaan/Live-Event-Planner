@@ -30,6 +30,7 @@ export function EventDetail() {
   const [registrationsLoading, setRegistrationsLoading] = useState(false)
   const [registrationResult, setRegistrationResult] = useState(null)
   const [registeredProgramIds, setRegisteredProgramIds] = useState([])
+  const [registrationChoice, setRegistrationChoice] = useState(null) // null | 'event' | 'subevents'
 
   console.log('[EventDetail] render', { id, loading, hasEvent: !!event, eventId: event?.id, userId: user?.uid, canEdit: user && event?.organizerId === user?.uid })
 
@@ -86,8 +87,11 @@ export function EventDetail() {
       .then((regs) => {
         if (cancelled) return
         const myReg = regs.find((r) => r.eventId === id)
-        if (myReg?.id && Array.isArray(myReg.programIds) && myReg.programIds.length > 0) {
-          setRegistrationResult({ registrationId: myReg.id, programIds: myReg.programIds })
+        if (myReg?.id) {
+          setRegistrationResult({
+            registrationId: myReg.id,
+            programIds: Array.isArray(myReg.programIds) ? myReg.programIds : [],
+          })
         }
       })
       .catch(() => {})
@@ -266,11 +270,17 @@ export function EventDetail() {
     (event.visibility === 'public' || event.visibility === 'private') &&
     !alreadyRegistered &&
     (event.capacity == null || (event.currentAttendees || 0) < event.capacity)
+  const programsRequiringRegistration = (event.programs ?? []).filter((p) => p.requiresRegistration)
+  const hasSubEvents = programsRequiringRegistration.length > 0
   const canEdit = user && (event.organizerId === user.uid)
-  const showQR = registrationResult?.programIds?.length > 0
-  const verifyUrl = showQR && registrationResult?.registrationId
+  const hasTicket = !!registrationResult?.registrationId
+  const verifyUrl = hasTicket
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/${id}/${registrationResult.registrationId}`
     : ''
+
+  const showRegistrationChoice = canRegister && registrationChoice === null
+  const showEventForm = canRegister && registrationChoice === 'event'
+  const showSubEventsView = canRegister && registrationChoice === 'subevents'
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
@@ -287,20 +297,91 @@ export function EventDetail() {
       <div className="mt-6">
         <EventDetails
           event={event}
-          onRegisterProgram={user ? startProgramRegistration : undefined}
+          onRegisterProgram={
+            showSubEventsView && user ? startProgramRegistration : undefined
+          }
           registeredProgramIds={registeredProgramIds}
         />
       </div>
+
+      {/* Registration: choose method first */}
+      {showRegistrationChoice && (
+        <section className="mt-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="font-display text-xl font-bold text-gray-900">
+            How would you like to join?
+          </h2>
+          <p className="mt-1 text-gray-600">
+            Register for the full event or only for specific sessions.
+          </p>
+          <div className={`mt-6 grid gap-4 ${hasSubEvents ? 'sm:grid-cols-2' : ''}`}>
+            <button
+              type="button"
+              onClick={() => setRegistrationChoice('event')}
+              className="flex flex-col rounded-xl border-2 border-gray-200 bg-gray-50/50 p-5 text-left transition hover:border-primary-300 hover:bg-primary-50/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            >
+              <span className="text-lg font-semibold text-gray-900">Register for this event</span>
+              <span className="mt-1 text-sm text-gray-600">
+                Get a full event pass.{hasSubEvents ? ' Optionally add sessions when you register.' : ''}
+              </span>
+            </button>
+            {hasSubEvents && (
+              <button
+                type="button"
+                onClick={() => setRegistrationChoice('subevents')}
+                className="flex flex-col rounded-xl border-2 border-gray-200 bg-gray-50/50 p-5 text-left transition hover:border-primary-300 hover:bg-primary-50/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              >
+                <span className="text-lg font-semibold text-gray-900">Participate in sub-events only</span>
+                <span className="mt-1 text-sm text-gray-600">
+                  Register only for specific sessions—no full event pass.
+                </span>
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {showEventForm && (
+        <section className="mt-8">
+          <div className="mb-4 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setRegistrationChoice(null)}
+              className="text-sm font-medium text-gray-500 hover:text-gray-700"
+            >
+              ← Change option
+            </button>
+          </div>
+          <RegistrationForm
+            event={event}
+            onRegister={handleRegister}
+            isSubmitting={registering}
+            mode="event"
+          />
+        </section>
+      )}
+
+      {showSubEventsView && programRegistrationMode === null && (
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setRegistrationChoice(null)}
+            className="text-sm font-medium text-gray-500 hover:text-gray-700"
+          >
+            ← Change option
+          </button>
+        </div>
+      )}
+
       {programRegistrationMode !== null && (
-        <div className="mt-8">
+        <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-display text-lg font-bold text-gray-900">Program Registration</h3>
+            <h3 className="font-display text-lg font-bold text-gray-900">Participate in this session</h3>
             <button
               type="button"
               onClick={cancelProgramRegistration}
-              className="text-sm text-gray-500 hover:text-gray-700"
+              className="text-sm font-medium text-gray-500 hover:text-gray-700 hover:underline"
             >
-              Cancel
+              ← Back to sessions
             </button>
           </div>
           <RegistrationForm
@@ -312,21 +393,12 @@ export function EventDetail() {
           />
         </div>
       )}
-      {canRegister && (
-        <div className="mt-8">
-          <RegistrationForm
-            event={event}
-            onRegister={handleRegister}
-            isSubmitting={registering}
-          />
-        </div>
-      )}
-      {user && alreadyRegistered && !showQR && (
+      {user && alreadyRegistered && !hasTicket && (
         <div className="mt-8 rounded-lg border border-primary-200 bg-primary-50 px-4 py-3 text-primary-800">
           You&apos;re already registered for this event.
         </div>
       )}
-      {user && alreadyRegistered && showQR && verifyUrl && (
+      {user && alreadyRegistered && verifyUrl && (
         <div className="mt-8">
           <h3 className="font-display text-lg font-bold text-gray-900">Your Event Ticket</h3>
           <p className="mt-1 text-sm text-gray-600">

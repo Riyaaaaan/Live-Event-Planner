@@ -170,15 +170,13 @@ export function EventDetails({ event, onRegisterProgram, registeredProgramIds = 
                                 <button
                                   type="button"
                                   onClick={() => onRegisterProgram(index)}
-                                  className="text-sm font-medium text-primary-600 hover:underline"
+                                  className="rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                                 >
-                                  Register
+                                  Participate
                                 </button>
                               )
                             ) : (
-                              <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
-                                Registration required
-                              </span>
+                              <span className="text-sm text-gray-500">Registration required</span>
                             )
                           ) : (
                             <span className="text-sm text-gray-400">—</span>

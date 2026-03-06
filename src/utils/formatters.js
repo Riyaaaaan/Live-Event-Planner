@@ -17,3 +17,14 @@ export function formatRelative(date) {
   const d = date instanceof Date ? date : new Date(date)
   return formatDistanceToNow(d, { addSuffix: true })
 }
+
+/** Returns true if the event's start date day has already passed */
+export function isEventPast(event) {
+  const startDate = event?.startDate
+  if (!startDate) return false
+  const d = startDate instanceof Date ? new Date(startDate.getTime()) : new Date(startDate)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  d.setHours(0, 0, 0, 0)
+  return d.getTime() < today.getTime()
+}
