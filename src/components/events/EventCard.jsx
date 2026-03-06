@@ -27,15 +27,15 @@ export function EventCard({ event }) {
         <span className="text-xs font-medium uppercase tracking-wide text-primary-600">
           {category || 'Event'}
         </span>
-        <h2 className="mt-1 font-display text-lg font-bold text-gray-900">{title}</h2>
+        <h2 className="mt-1 font-display text-lg font-bold text-gray-900 line-clamp-2">{title}</h2>
         {description && (
           <p className="mt-1 line-clamp-2 text-sm text-gray-600">{description}</p>
         )}
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-500">
-          <span>{formatDate(startDate)}</span>
-          {location?.address && <span>· {location.address}</span>}
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+          <span className="truncate">{formatDate(startDate)}</span>
+          {location?.address && <span className="truncate">· {location.address}</span>}
           {spotsLeft != null && (
-            <span className="font-medium text-primary-600">{spotsLeft} spots left</span>
+            <span className="font-medium text-primary-600 whitespace-nowrap">{spotsLeft} spots left</span>
           )}
         </div>
       </div>

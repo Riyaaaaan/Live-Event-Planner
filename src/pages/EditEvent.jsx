@@ -84,13 +84,13 @@ export function EditEvent() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-12">
+    <main className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
       <Link to={`/events/${id}`} className="text-sm font-medium text-primary-600 hover:underline">
         ← Back to event
       </Link>
-      <h1 className="mt-6 font-display text-3xl font-bold text-gray-900">Edit event</h1>
+      <h1 className="mt-4 font-display text-2xl font-bold text-gray-900 sm:mt-6 sm:text-3xl">Edit event</h1>
       <p className="mt-1 text-gray-600">Update event details.</p>
-      <div className="mt-8 card p-6">
+      <div className="mt-6 sm:mt-8 card p-4 sm:p-6">
         <EventForm event={event} onSubmit={onSubmit} isSubmitting={isSubmitting} />
       </div>
     </main>

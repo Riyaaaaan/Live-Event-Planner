@@ -7,6 +7,7 @@ import { Home } from './pages/Home'
 import { Events } from './pages/Events'
 import { EventDetail } from './pages/EventDetail'
 import { VerifyRegistration } from './pages/VerifyRegistration'
+import { ScanTicket } from './pages/ScanTicket'
 import { CreateEvent } from './pages/CreateEvent'
 import { EditEvent } from './pages/EditEvent'
 import { Dashboard } from './pages/Dashboard'
@@ -28,6 +29,7 @@ export default function App() {
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/events/:id/edit" element={<EditEvent />} />
               <Route path="/verify/:eventId/:registrationId" element={<VerifyRegistration />} />
+              <Route path="/scan" element={<ScanTicket />} />
               <Route path="/create" element={<CreateEvent />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Login />} />

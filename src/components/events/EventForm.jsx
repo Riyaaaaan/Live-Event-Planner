@@ -124,24 +124,26 @@ export function EventForm({ event, onSubmit, isSubmitting }) {
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Category</label>
-          <select className="input mt-1" {...register('category')}>
-            <option value="">Select category</option>
-            {EVENT_CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-          {errors.category && (
-            <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
-          )}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Capacity</label>
-          <input type="number" className="input mt-1" {...register('capacity')} />
-          {errors.capacity && (
-            <p className="mt-1 text-sm text-red-600">{errors.capacity.message}</p>
-          )}
+        <div className="sm:col-span-2 sm:grid sm:grid-cols-2 sm:gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Category</label>
+            <select className="input mt-1" {...register('category')}>
+              <option value="">Select category</option>
+              {EVENT_CATEGORIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            {errors.category && (
+              <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Capacity</label>
+            <input type="number" className="input mt-1" {...register('capacity')} />
+            {errors.capacity && (
+              <p className="mt-1 text-sm text-red-600">{errors.capacity.message}</p>
+            )}
+          </div>
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -214,100 +216,102 @@ export function EventForm({ event, onSubmit, isSubmitting }) {
           Add sessions or activities with date, time, and optional description.
         </p>
         {programs.length > 0 && (
-          <div className="mt-3 overflow-hidden rounded-lg border border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-600">
-                    Day & time
-                  </th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-600">
-                    Title
-                  </th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-600">
-                    Description (optional)
-                  </th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-600">
-                    Capacity
-                  </th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-600">
-                    Requires registration
-                  </th>
-                  <th scope="col" className="relative w-10 px-2 py-2">
-                    <span className="sr-only">Remove</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {programs.map((p, index) => (
-                  <tr key={index}>
-                    <td className="whitespace-nowrap px-3 py-2">
-                      <input
-                        type="datetime-local"
-                        className="input w-full text-sm"
-                        value={p.dateTime}
-                        onChange={(e) => updateProgram(index, 'dateTime', e.target.value)}
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        className="input w-full text-sm"
-                        placeholder="e.g. Opening keynote"
-                        value={p.title}
-                        onChange={(e) => updateProgram(index, 'title', e.target.value)}
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        className="input w-full text-sm"
-                        placeholder="Optional"
-                        value={p.description}
-                        onChange={(e) => updateProgram(index, 'description', e.target.value)}
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="number"
-                        min="1"
-                        className="input w-24 text-sm"
-                        placeholder="Max"
-                        value={p.capacity ?? ''}
-                        onChange={(e) => updateProgram(index, 'capacity', e.target.value ? parseInt(e.target.value, 10) : null)}
-                      />
-                    </td>
-                    <td className="px-3 py-2">
-                      <label className="inline-flex cursor-pointer items-center gap-2">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                          checked={Boolean(p.requiresRegistration)}
-                          onChange={(e) => updateProgram(index, 'requiresRegistration', e.target.checked)}
-                        />
-                        <span className="text-sm text-gray-600">Requires registration</span>
-                      </label>
-                    </td>
-                    <td className="whitespace-nowrap px-2 py-2 text-right">
-                      <button
-                        type="button"
-                        onClick={() => removeProgram(index)}
-                        className="text-gray-400 hover:text-red-600"
-                        aria-label="Remove program"
-                      >
-                        ×
-                      </button>
-                    </td>
+          <div className="mt-3 overflow-x-auto rounded-lg border border-gray-200">
+            <div className="min-w-full">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-600">
+                      Day & time
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-600">
+                      Title
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-600">
+                      Description (optional)
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-600">
+                      Capacity
+                    </th>
+                    <th scope="col" className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-600">
+                      Requires registration
+                    </th>
+                    <th scope="col" className="relative w-10 px-2 py-2">
+                      <span className="sr-only">Remove</span>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {programs.map((p, index) => (
+                    <tr key={index}>
+                      <td className="whitespace-nowrap px-3 py-2">
+                        <input
+                          type="datetime-local"
+                          className="input w-full text-sm"
+                          value={p.dateTime}
+                          onChange={(e) => updateProgram(index, 'dateTime', e.target.value)}
+                        />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input
+                          type="text"
+                          className="input w-full text-sm"
+                          placeholder="e.g. Opening keynote"
+                          value={p.title}
+                          onChange={(e) => updateProgram(index, 'title', e.target.value)}
+                        />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input
+                          type="text"
+                          className="input w-full text-sm"
+                          placeholder="Optional"
+                          value={p.description}
+                          onChange={(e) => updateProgram(index, 'description', e.target.value)}
+                        />
+                      </td>
+                      <td className="px-3 py-2">
+                        <input
+                          type="number"
+                          min="1"
+                          className="input w-24 text-sm"
+                          placeholder="Max"
+                          value={p.capacity ?? ''}
+                          onChange={(e) => updateProgram(index, 'capacity', e.target.value ? parseInt(e.target.value, 10) : null)}
+                        />
+                      </td>
+                      <td className="px-3 py-2">
+                        <label className="inline-flex cursor-pointer items-center gap-2">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                            checked={Boolean(p.requiresRegistration)}
+                            onChange={(e) => updateProgram(index, 'requiresRegistration', e.target.checked)}
+                          />
+                          <span className="text-sm text-gray-600">Requires registration</span>
+                        </label>
+                      </td>
+                      <td className="whitespace-nowrap px-2 py-2 text-right">
+                        <button
+                          type="button"
+                          onClick={() => removeProgram(index)}
+                          className="text-gray-400 hover:text-red-600"
+                          aria-label="Remove program"
+                        >
+                          ×
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
 
-      <div className="flex gap-3">
-        <button type="submit" className="btn-primary" disabled={isSubmitting}>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <button type="submit" className="btn-primary w-full sm:w-auto" disabled={isSubmitting}>
           {isSubmitting ? 'Saving…' : event ? 'Update event' : 'Create event'}
         </button>
       </div>

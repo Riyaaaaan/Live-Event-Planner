@@ -98,7 +98,7 @@ export function RegistrationForm({ event, onRegister, isSubmitting, mode = 'even
               required
             />
           </div>
-          <div>
+          <div className="sm:col-span-3">
             <label htmlFor="reg-branch" className="block text-sm font-medium text-gray-700">
               Branch <span className="text-red-500">*</span>
             </label>

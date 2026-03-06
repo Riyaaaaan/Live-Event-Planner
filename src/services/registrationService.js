@@ -141,6 +141,16 @@ export async function getRegistrationById(eventId, registrationId) {
   }
 }
 
+export async function updateRegistrationCheckIn(eventId, registrationId, checkInStatus) {
+  console.log('[registrationService] updateRegistrationCheckIn', { eventId, registrationId, checkInStatus })
+  const ref = doc(db, 'events', eventId, 'registrations', registrationId)
+  await updateDoc(ref, {
+    checkInStatus,
+    checkedInAt: checkInStatus ? new Date() : null,
+  })
+  console.log('[registrationService] updateRegistrationCheckIn success', { eventId, registrationId })
+}
+
 export async function getRegistrationsForEvent(eventId) {
   console.log('[registrationService] getRegistrationsForEvent', { eventId })
   const q = query(registrationsSub(eventId), orderBy('registeredAt', 'asc'))

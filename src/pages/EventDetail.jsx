@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { QRCodeSVG } from 'qrcode.react'
 import { getEvent } from '../services/eventService'
 import {
   registerForEvent,
@@ -15,6 +14,7 @@ import { useAuth } from '../hooks/useAuth'
 import { EventDetails } from '../components/events/EventDetails'
 import { RegistrationForm } from '../components/events/RegistrationForm'
 import { Loader } from '../components/common/Loader'
+import { Ticket } from '../components/common/Ticket'
 
 export function EventDetail() {
   const { id } = useParams()
@@ -327,25 +327,20 @@ export function EventDetail() {
         </div>
       )}
       {user && alreadyRegistered && showQR && verifyUrl && (
-        <div className="mt-8 rounded-xl border border-primary-200 bg-primary-50 p-6">
-          <h3 className="font-display text-lg font-bold text-primary-900">Your program registration QR</h3>
-          <p className="mt-1 text-sm text-primary-800">
-            Show this QR when entering programs you registered for. Scanning it will display your registered programs.
+        <div className="mt-8">
+          <h3 className="font-display text-lg font-bold text-gray-900">Your Event Ticket</h3>
+          <p className="mt-1 text-sm text-gray-600">
+            Present this QR code at the entrance for check-in.
           </p>
-          <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-            <div className="flex-shrink-0 rounded-lg border-4 border-white bg-white p-2 shadow-md">
-              <QRCodeSVG value={verifyUrl} size={200} level="M" />
-            </div>
-            <div className="text-sm text-primary-800">
-              <p className="font-medium">Registered programs:</p>
-              <ul className="mt-1 list-inside list-disc">
-                {(event?.programs ?? [])
-                  .filter((_, i) => registrationResult.programIds.includes(i))
-                  .map((p, idx) => (
-                    <li key={idx}>{p.title || `Program ${idx + 1}`}</li>
-                  ))}
-              </ul>
-            </div>
+          <div className="mt-4 flex justify-center">
+            <Ticket
+              event={event}
+              registration={{
+                ...registrationResult,
+                displayName: profile?.displayName ?? user.displayName ?? '',
+              }}
+              verifyUrl={verifyUrl}
+            />
           </div>
         </div>
       )}
@@ -361,65 +356,67 @@ export function EventDetail() {
             </div>
           ) : (
             <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Name
-                    </th>
-                    <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Email
-                    </th>
-                    <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Phone
-                    </th>
-                    <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Class / Section / Branch
-                    </th>
-                    <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Programs
-                    </th>
-                    <th scope="col" className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                      Registered
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {registrations.map((reg) => {
-                    const eventPrograms = event?.programs ?? []
-                    const programTitles = (reg.programIds ?? [])
-                      .map((i) => eventPrograms[i]?.title || `#${i + 1}`)
-                      .filter(Boolean)
-                    return (
-                      <tr key={reg.id}>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
-                          {reg.displayName || '—'}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
-                          {reg.email || '—'}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
-                          {reg.phone || '—'}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {[reg.class, reg.section, reg.branch].filter(Boolean).join(' / ') || '—'}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {programTitles.length > 0 ? programTitles.join(', ') : '—'}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
-                          {reg.registeredAt
-                            ? new Date(reg.registeredAt).toLocaleString(undefined, {
-                                dateStyle: 'short',
-                                timeStyle: 'short',
-                              })
-                            : '—'}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+              <div className="min-w-full">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700">
+                        Name
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700">
+                        Email
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700">
+                        Phone
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700">
+                        Class / Section / Branch
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700">
+                        Programs
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700">
+                        Registered
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {registrations.map((reg) => {
+                      const eventPrograms = event?.programs ?? []
+                      const programTitles = (reg.programIds ?? [])
+                        .map((i) => eventPrograms[i]?.title || `#${i + 1}`)
+                        .filter(Boolean)
+                      return (
+                        <tr key={reg.id}>
+                          <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
+                            {reg.displayName || '—'}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
+                            {reg.email || '—'}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
+                            {reg.phone || '—'}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
+                            {[reg.class, reg.section, reg.branch].filter(Boolean).join(' / ') || '—'}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
+                            {programTitles.length > 0 ? programTitles.join(', ') : '—'}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                            {reg.registeredAt
+                              ? new Date(reg.registeredAt).toLocaleString(undefined, {
+                                  dateStyle: 'short',
+                                  timeStyle: 'short',
+                                })
+                              : '—'}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </section>

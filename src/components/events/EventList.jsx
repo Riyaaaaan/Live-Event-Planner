@@ -12,8 +12,8 @@ export function EventList({ events, loading, error, emptyMessage }) {
   }
   if (!events?.length) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center text-gray-600">
-        {emptyMessage ?? "No events yet. Check back later or create one if you&apos;re an organizer."}
+      <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center text-gray-600 sm:p-12">
+        {emptyMessage ?? "No events yet. Check back later or create one if you're an organizer."}
       </div>
     )
   }

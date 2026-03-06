@@ -28,20 +28,20 @@ export function Dashboard() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="font-display text-3xl font-bold text-gray-900">Dashboard</h1>
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:py-12">
+      <h1 className="font-display text-2xl font-bold text-gray-900 sm:text-3xl">Dashboard</h1>
       <p className="mt-1 text-gray-600">
         Welcome back, {profile?.displayName || user.email}.
       </p>
 
       {isOrganizer && (
         <>
-          <div className="mt-8 flex gap-4">
-            <Link to="/create" className="btn-primary">
+          <div className="mt-6 sm:mt-8 flex gap-3 sm:gap-4">
+            <Link to="/create" className="btn-primary w-full sm:w-auto text-center">
               Create event
             </Link>
           </div>
-          <section className="mt-8">
+          <section className="mt-8 sm:mt-10">
             <h2 className="font-display text-xl font-bold text-gray-900">Your events</h2>
             <p className="mt-1 text-gray-600">Events you created (all statuses).</p>
             <div className="mt-6">
@@ -51,7 +51,7 @@ export function Dashboard() {
         </>
       )}
 
-      <section className="mt-8">
+      <section className="mt-8 sm:mt-10">
         <h2 className="font-display text-xl font-bold text-gray-900">Registered events</h2>
         <p className="mt-1 text-gray-600">Events you&apos;ve signed up for as an attendee.</p>
         <div className="mt-6">
@@ -68,7 +68,7 @@ export function Dashboard() {
         </div>
       </section>
 
-      <section className="mt-8">
+      <section className="mt-8 sm:mt-10">
         <h2 className="font-display text-xl font-bold text-gray-900">Discover events</h2>
         <p className="mt-1 text-gray-600">Browse public events.</p>
         <div className="mt-6">

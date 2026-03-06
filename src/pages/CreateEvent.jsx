@@ -60,10 +60,10 @@ export function CreateEvent() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="font-display text-3xl font-bold text-gray-900">Create event</h1>
+    <main className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
+      <h1 className="font-display text-2xl font-bold text-gray-900 sm:text-3xl">Create event</h1>
       <p className="mt-1 text-gray-600">Add a new event for others to discover and register.</p>
-      <div className="mt-8 card p-6">
+      <div className="mt-6 sm:mt-8 card p-4 sm:p-6">
         <EventForm onSubmit={onSubmit} isSubmitting={isSubmitting} />
       </div>
     </main>

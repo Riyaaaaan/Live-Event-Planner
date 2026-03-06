@@ -46,11 +46,11 @@ export function Signup() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-12">
+    <div className="mx-auto max-w-md px-4 py-8 sm:py-12">
       <h1 className="font-display text-2xl font-bold text-gray-900">Sign up</h1>
       <p className="mt-1 text-gray-600">Create an account to browse and register for events.</p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4 sm:mt-8">
         <div>
           <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
             Display name
