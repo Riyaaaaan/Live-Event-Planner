@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import toast from 'react-hot-toast'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
 import { useAuth } from './hooks/useAuth'
 import { subscribeToForegroundMessages } from './services/messagingService'
 import { Header } from './components/common/Header'
 import { Footer } from './components/common/Footer'
+import { NotificationToast } from './components/common/NotificationToast'
 import { Home } from './pages/Home'
 import { Events } from './pages/Events'
 import { EventDetail } from './pages/EventDetail'
@@ -27,9 +27,24 @@ function ForegroundNotificationSubscriber() {
     let mounted = true
     let unsub = () => {}
     subscribeToForegroundMessages((payload) => {
-      const title = payload.notification?.title || 'Notification'
-      const body = payload.notification?.body || ''
-      toast(`${title}${body ? `: ${body}` : ''}`, { duration: 5000 })
+      const title = payload.notification?.title || payload.data?.title || 'Notification'
+      const body = payload.notification?.body || payload.data?.body || ''
+      const url = payload.fcmOptions?.link || payload.data?.url || payload.data?.link
+
+      toast.custom(
+        (t) => (
+          <NotificationToast
+            title={title}
+            body={body}
+            url={url}
+            isVisible={t.visible}
+            onClose={() => toast.dismiss(t.id)}
+          />
+        ),
+        {
+          duration: 7000,
+        }
+      )
     }).then((fn) => {
       if (mounted) unsub = fn
     })
@@ -46,7 +61,7 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <ForegroundNotificationSubscriber />
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-screen flex-col bg-slate-50">
           <Header />
           <main className="flex-1">
             <Routes>
@@ -66,7 +81,32 @@ export default function App() {
           </main>
           <Footer />
         </div>
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          gutter={12}
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#0f172a',
+              color: '#e5e7eb',
+              borderRadius: '999px',
+              padding: '10px 14px',
+              fontSize: '0.875rem',
+            },
+            success: {
+              iconTheme: {
+                primary: '#22c55e',
+                secondary: '#0f172a',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#0f172a',
+              },
+            },
+          }}
+        />
       </BrowserRouter>
     </ErrorBoundary>
   )
