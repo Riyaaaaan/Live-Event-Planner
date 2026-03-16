@@ -1,6 +1,10 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { Toaster } from 'react-hot-toast'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
+import { useAuth } from './hooks/useAuth'
+import { subscribeToForegroundMessages } from './services/messagingService'
 import { Header } from './components/common/Header'
 import { Footer } from './components/common/Footer'
 import { Home } from './pages/Home'
@@ -16,10 +20,32 @@ import { Login } from './components/auth/Login'
 import { Signup } from './components/auth/Signup'
 import { PasswordReset } from './components/auth/PasswordReset'
 
+function ForegroundNotificationSubscriber() {
+  const { user } = useAuth()
+  useEffect(() => {
+    if (!user) return
+    let mounted = true
+    let unsub = () => {}
+    subscribeToForegroundMessages((payload) => {
+      const title = payload.notification?.title || 'Notification'
+      const body = payload.notification?.body || ''
+      toast(`${title}${body ? `: ${body}` : ''}`, { duration: 5000 })
+    }).then((fn) => {
+      if (mounted) unsub = fn
+    })
+    return () => {
+      mounted = false
+      unsub()
+    }
+  }, [user])
+  return null
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <ForegroundNotificationSubscriber />
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">

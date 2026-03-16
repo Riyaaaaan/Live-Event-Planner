@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "node scripts/generate-firebase-sw.js && vite build",
+    "preview": "vite preview",
+    "generate-firebase-sw": "node scripts/generate-firebase-sw.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "date-fns": "^3.6.0",
     "firebase": "^10.14.1",
+    "firebase-functions": "^7.1.1",
     "html5-qrcode": "^2.3.8",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",

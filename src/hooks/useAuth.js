@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../services/firebase'
 import { getUserProfile } from '../services/authService'
+import { initAndSaveFcmToken } from '../services/messagingService'
 
 export function useAuth() {
   const [user, setUser] = useState(null)
@@ -16,6 +17,7 @@ export function useAuth() {
         const p = await getUserProfile(firebaseUser.uid)
         setProfile(p)
         console.log('[useAuth] profile loaded', { uid: firebaseUser.uid, role: p?.role })
+        initAndSaveFcmToken(firebaseUser.uid).catch(() => {})
       } else {
         setProfile(null)
       }

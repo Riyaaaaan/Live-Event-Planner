@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
+import { getMessaging, isSupported } from 'firebase/messaging'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -18,3 +19,14 @@ export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const storage = getStorage(app)
 export const googleProvider = new GoogleAuthProvider()
+
+/** Messaging only in browser; may be null if unsupported or in SSR */
+let messagingInstance = null
+export async function getMessagingInstance() {
+  if (typeof window === 'undefined') return null
+  if (messagingInstance) return messagingInstance
+  const supported = await isSupported()
+  if (!supported) return null
+  messagingInstance = getMessaging(app)
+  return messagingInstance
+}
