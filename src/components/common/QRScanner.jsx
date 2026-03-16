@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Html5QrcodeScanner } from 'html5-qrcode'
 
 export function QRScanner({ onScan, onError }) {
-  const [isScanning, setIsScanning] = useState(false)
+  const [isScanning, setIsScanning] = useState(true)
   const [scanError, setScanError] = useState(null)
   const scannerRef = useRef(null)
   const html5QrcodeScannerRef = useRef(null)
@@ -13,6 +13,11 @@ export function QRScanner({ onScan, onError }) {
         html5QrcodeScannerRef.current.clear().catch(console.error)
       }
     }
+  }, [])
+
+  // Auto-start camera when scanner is opened
+  useEffect(() => {
+    startScanning()
   }, [])
 
   const startScanning = () => {

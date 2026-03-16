@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt'],
       manifest: {
-        name: 'Live Event Planner',
-        short_name: 'Event Planner',
+        name: 'Planora',
+        short_name: 'Planora',
         description: 'Plan and manage your events with ease',
         theme_color: '#3b82f6',
         background_color: '#ffffff',

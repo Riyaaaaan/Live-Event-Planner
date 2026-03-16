@@ -9,7 +9,7 @@ export function Home() {
     <main className="mx-auto max-w-6xl px-4 py-12">
       <section className="mb-12 text-center">
         <h1 className="font-display text-4xl font-bold text-gray-900 sm:text-5xl">
-          Live Event Planner
+          Planora
         </h1>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
           Create, discover, and register for events. Real-time updates and a seamless experience.
